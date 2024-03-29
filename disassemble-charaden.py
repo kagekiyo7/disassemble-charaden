@@ -23,9 +23,9 @@ def main(file_path):
     dir_name = os.path.dirname(file_path)
     with open(file_path, "rb") as f:
         target_binary = f.read()
-    gifs = extract("MB".encode(), target_binary)
-    mbacs = extract("MT".encode(), target_binary)
-    mtras = extract("GIF".encode(), target_binary)
+    mbacs = extract("MB".encode(), target_binary)
+    mtras = extract("MT".encode(), target_binary)
+    gifs = extract("GIF".encode(), target_binary)
 
     def output(binaries, ext):
         i = 0
@@ -35,9 +35,9 @@ def main(file_path):
                 f.write(binary)
                 print(f"{os.path.basename(output_path)}: done!")
             i += 1
-    output(gifs,  ext="gif")
     output(mbacs, ext="mbac")
     output(mtras, ext="mtra")
+    output(gifs,  ext="gif")
 
 if __name__ == "__main__":
     for file_path in sys.argv[1:]:

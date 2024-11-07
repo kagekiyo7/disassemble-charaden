@@ -3,38 +3,45 @@
 import os
 import sys
 
-def extract(magic: bytes, binary: bytes):
+def extract(magic: bytes, content: bytes):
     ret = []
-    file_i = 0
+    offset = 0
+    
     while True:
-        file_i = binary.find(magic, file_i)
-        if (file_i == -1):
+        offset = content.find(magic, offset)
+        if (offset == -1):
             break
-        if (int.from_bytes(binary[file_i-2:file_i]) != 0):
-            file_i += 1
+        if (int.from_bytes(content[offset-2:offset]) != 0):
+            offset += 1
             continue
-        size = int.from_bytes(binary[file_i-4:file_i-2], byteorder="little")
-        ret.append(binary[file_i:file_i+size])
-        file_i += 1
+        size = int.from_bytes(content[offset-4:offset-2], byteorder="little")
+        ret.append(content[offset:offset+size])
+        offset += 1
+    
     return ret
 
 def main(file_path):
     file_name = os.path.splitext(os.path.basename(file_path))[0]
     dir_name = os.path.dirname(file_path)
+    
     with open(file_path, "rb") as f:
-        target_binary = f.read()
-    mbacs = extract("MB".encode(), target_binary)
-    mtras = extract("MT".encode(), target_binary)
-    gifs = extract("GIF".encode(), target_binary)
+        charaden_content = f.read()
+        
+    mbacs = extract(b"MB", charaden_content)
+    mtras = extract(b"MT", charaden_content)
+    gifs = extract(b"GIF", charaden_content)
 
-    def output(binaries, ext):
+    def output(contents, ext):
         i = 0
-        for binary in binaries:
+        for content in contents:
             output_path = os.path.join(dir_name, f"{file_name}_{i}.{ext}")
+            
             with open(output_path, "wb") as f:
-                f.write(binary)
-                print(f"{os.path.basename(output_path)}: done!")
+                f.write(content)
+            
+            print(f"{os.path.basename(output_path)}: done!")
             i += 1
+    
     output(mbacs, ext="mbac")
     output(mtras, ext="mtra")
     output(gifs,  ext="gif")

@@ -22,7 +22,7 @@ jobs:
         with:
           nuitka-version: main
           script-name: disassemble-charaden.py
-          onefile: true
+          mode: app
 
       # Uploads artifact
       - name: Upload Artifact
